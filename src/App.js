@@ -1,24 +1,21 @@
-import logo from './logo.svg';
-import './App.css';
+
+import Opening from "./Opening";
+import Quiz from "./Quiz";
+import React from "react";
 
 function App() {
+
+  const [gameOn, setGameOn] = React.useState(false)
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <section className="bg-white flex justify-center items-center h-screen flex-col">
+        {!gameOn ?
+          <Opening handleClick={_ => setGameOn(prev => !prev)} />
+          : <Quiz handleResetGame={_ => setGameOn(false)} />}
+      </section>
+    </>
   );
 }
 
