@@ -9,7 +9,7 @@ export default function Quiz() {
 
     const [loading, setLoading] = React.useState(true)
 
-    const questionAmount = 1;
+    const questionAmount = 3;
     const answerDataInit = [...new Array(questionAmount)].map(ans => ({ questionIndex: -1, answer: "", isCorrect: false }))
     const [questionData, setQuestionData] = React.useState([])
 
@@ -18,14 +18,13 @@ export default function Quiz() {
 
     const [formResponse, setFormResponse] = React.useState(answerDataInit)
     function handleChange(e, index, rightAns) {
-        const { name, value } = e.target;
+        const { value } = e.target;
         setFormResponse(prevFormData => {
             const newArray = prevFormData.slice(0);
             newArray[index] = { questionIndex: index, answer: value, isCorrect: value === rightAns ? true : false }
             return newArray;
         })
     }
-    console.log(formResponse[0].answer)
 
     // Fetching Data.
 
@@ -33,7 +32,26 @@ export default function Quiz() {
         async function getData() {
             const res = await fetch(`https://opentdb.com/api.php?amount=${questionAmount}&category=9&difficulty=easy&type=multiple`);
             const data = await res.json();
-            setQuestionData(data.results);
+
+            // Mapping the fetched data such that we have a choices property with all options randomised.
+
+            const ourData = data.results.map(questionDetails => {
+                function shuffleArray(array) {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                        return array
+                    }
+                }
+                const choices = shuffleArray([questionDetails.correct_answer, ...questionDetails.incorrect_answers]);
+
+                return {
+                    ...questionDetails,
+                    choices: choices
+                }
+            })
+
+            setQuestionData(ourData)
             setLoading(false);
         }
         getData()
@@ -43,19 +61,12 @@ export default function Quiz() {
     // Mapping questions from Data.
 
     const questionJSX = questionData.map((questionDetails, index) => {
-        const { question, correct_answer, incorrect_answers } = questionDetails;
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-                return array
-            }
-        }
-        const choices = shuffleArray([correct_answer, ...incorrect_answers]);
+        const { question, correct_answer, choices } = questionDetails;
+
         const optionList = choices.map((choice) => {
 
             return (
-                <>
+                <span key={nanoid()}>
                     <input
                         type="radio"
                         id={choice}
@@ -64,16 +75,16 @@ export default function Quiz() {
                         onChange={e => handleChange(e, index, correct_answer)}
                     />
                     <label htmlFor={choice}>{choice}</label>
-                </>
+                </span>
             )
         })
 
         return (
-            <>
+            <div key={nanoid()}>
                 <h3>{question}</h3>
                 {optionList}
 
-            </>
+            </div>
         )
     })
 
@@ -87,7 +98,7 @@ export default function Quiz() {
         <>
             {
                 loading ? <MyLoader />
-                    : <form>
+                    : <form onSubmit={handleSubmit}>
                         {questionJSX}
                     </form>
             }
