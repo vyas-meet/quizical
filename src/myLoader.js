@@ -7,8 +7,8 @@ const MyLoader = (props) => (
         width={650}
         height={300}
         viewBox="0 0 200 150"
-        backgroundColor="#eef2c0"
-        foregroundColor="#d3f7cf"
+        backgroundColor="#82c2c2"
+        foregroundColor="#8db3a4"
         {...props}
     >
         <circle cx="10" cy="20" r="8" />

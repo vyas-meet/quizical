@@ -8,4 +8,14 @@
         font-family: 'Inter', sans-serif;
         color: #293264;
     }
+    .spacer{
+        aspect-ratio: 960/540;
+        width: 100%;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+    .layer1{
+        background-image:url("./blob-1.svg")
+    }
 }
